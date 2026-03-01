@@ -5,7 +5,7 @@
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "gdi32.lib")
 #pragma comment(lib, "comctl32.lib")
-
+#include "Buttons.h"
 #include <windows.h>
 #include <commctrl.h>
 #include <vector>
@@ -23,6 +23,7 @@ public:
     HWND hwnd = nullptr;
     HFONT hFontUI = nullptr;
     HFONT hFontTitle = nullptr;
+    HWND hEditResult;
 
     // Modern Colors
     HBRUSH hBackBrush = CreateSolidBrush(RGB(250, 250, 252));
@@ -80,6 +81,50 @@ ModernApp app;
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     switch (msg) {
     case WM_CREATE: {
+        int id = LOWORD(wp);
+
+        // 1. User clicks "Calculate Gamma"
+        if (id == ID_OPTION1) {
+            SetWindowTextW(app.hStaticTitle, L"Relativistic Gamma");
+            SetWindowTextW(app.hEdit1, L""); // Clear input
+            SendMessage(app.hEdit1, EM_SETCUEBANNER, FALSE, (LPARAM)L"Enter velocity in m/s");
+
+            for (auto b : app.menuButtons) ShowWindow(b, SW_HIDE);
+            ShowWindow(app.hEdit1, SW_SHOW);
+            ShowWindow(app.hBtnSubmit, SW_SHOW);
+            ShowWindow(app.hBtnBack, SW_SHOW);
+        }
+
+        // 2. User clicks "Execute"
+        if (id == ID_SUBMIT) {
+            wchar_t buffer[64];
+            GetWindowTextW(app.hEdit1, buffer, 64);
+
+            try {
+                double v = std::stod(buffer);
+                double gamma = RelativityCalculator::CalculateGamma(v);
+
+                std::wstring resultStr;
+                if (gamma < 0) {
+                    resultStr = L"Error: v >= c!";
+                } else {
+                    resultStr = L"Gamma Factor: " + std::to_wstring(gamma);
+                }
+
+                // Set result to the input box or a result box
+                SetWindowTextW(app.hEdit1, resultStr.c_str());
+                // Make it read-only so they can't type over the result but CAN copy it
+                SendMessage(app.hEdit1, EM_SETREADONLY, TRUE, 0);
+            } catch (...) {
+                MessageBoxW(hwnd, L"Please enter a valid number", L"Input Error", MB_ICONERROR);
+            }
+        }
+
+        if (id == ID_BACK) {
+            SendMessage(app.hEdit1, EM_SETREADONLY, FALSE, 0);
+        }
+        break;
+    }
         app.hwnd = hwnd;
         app.hStaticTitle = CreateWindowW(L"STATIC", L"Main Menu", WS_VISIBLE | WS_CHILD | SS_CENTER | SS_CENTERIMAGE, 0, 0, 0, 0, hwnd, NULL, NULL, NULL);
         // 1. Define your unique names in a list
@@ -166,3 +211,5 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nShow) {
     }
     return 0;
 }
+//double long long v = std::cin("Enter velocity in meters per second");
+//double long gamma = 1/sqrt(1-(v*v)/(299792458*299792458))
