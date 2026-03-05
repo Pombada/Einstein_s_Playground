@@ -5,7 +5,9 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(Einstein_s_Playground main.cpp
         Buttons.cpp
-        Buttons.h)
+        Buttons.h
+        UI.cpp
+        UI.h)
 
 target_link_libraries(Einstein_s_Playground
         user32
