@@ -1,6 +1,8 @@
 #include "UI.h"
 #include "Buttons.h"
 #include <commctrl.h>
+#include <iomanip>
+#include <sstream>
 #pragma comment(lib, "comctl32.lib")
 
 UI ui; // Short and sweet
@@ -16,7 +18,26 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             if (id == ID_INFO)    ui.ShowHelp();
             if (id == ID_BACK)    ui.ShowMenu();
             if (id == ID_SUBMIT) {
-                // Logic for calculation using Buttons.h
+                wchar_t buffer[128];
+                GetWindowTextW(ui.hEdit1, buffer, 128);
+
+                double result = RelativityCalculator::ParseAndCalculate(buffer);
+
+                // 1. Clear the input box immediately
+                SetWindowTextW(ui.hEdit1, L"");
+                ShowWindow(ui.hEditResult, SW_SHOW); // Ensure it's visible
+
+                // 2. Display the result in the new box
+                if (result == -1.0) {
+                    SetWindowTextW(ui.hEditResult, L"Error: v must be < c and >= 0");
+                } else if (result == -2.0) {
+                    SetWindowTextW(ui.hEditResult, L"Error: Invalid input");
+                } else {
+                    std::wstringstream ss;
+                    ss << L"Gamma: " << std::fixed << std::setprecision(15) << result;
+
+                    SetWindowTextW(ui.hEditResult, ss.str().c_str());
+                }
             }
             break;
         }
@@ -40,7 +61,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int nShow)
     wc.lpfnWndProc   = WindowProc;
     wc.hInstance     = hInst;
     wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
-    wc.hbrBackground = ui.hBackBrush; // Uses the brush created in UI constructor
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1); // Uses the brush created in UI constructor
     wc.lpszClassName = L"EinsteinPlaygroundClass";
 
     RegisterClassW(&wc);
