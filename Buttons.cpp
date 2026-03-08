@@ -3,15 +3,13 @@
 //
 #include "Buttons.h"
 #include <cmath>
+#define C 299792458.0L
 long double RelativityCalculator::CalculateGamma(long double v) {
-    const long double c = 299792458.0L; // Note the 'L' for long double
-    if (v < 0 || v >= c) return -1.0;
-    return 1.0L / std::sqrt(1.0L - (v * v) / (c * c));
+    if (v < 0 || v >= C) return -1.0;
+    return 1.0L / std::sqrt(1.0L - (v * v) / (C * C));
 }
 
-double RelativityCalculator::ParseAndCalculate(std::wstring input) {
-    const double c = 299792458.0;
-
+long double RelativityCalculator::ParseAndCalculate(std::wstring input) {
     // 1. Convert to lowercase for easier comparison
     for (auto &c : input) c = towlower(c);
 
@@ -23,7 +21,7 @@ double RelativityCalculator::ParseAndCalculate(std::wstring input) {
         size_t pctPos = input.find(L"%");
         if (pctPos != std::wstring::npos) {
             double percent = std::stod(input.substr(0, pctPos));
-            return CalculateGamma(c * (percent / 100.0));
+            return CalculateGamma(C * (percent / 100.0));
         }
 
         // 3. Check for suffixes (k or m)
@@ -35,13 +33,24 @@ double RelativityCalculator::ParseAndCalculate(std::wstring input) {
             input.erase(input.find(L"k")); // Remove 'k' for stod
         }
 
-        // 4. Convert remaining string to double and apply multiplier
         baseValue = std::stod(input);
-        double v = baseValue * multiplier;
+       long double v = baseValue * multiplier;
 
         return CalculateGamma(v);
 
     } catch (...) {
         return -2.0; // Error: Invalid Input
+    }
+}
+
+long double RelativityCalculator::CalculateSpeedFromGamma(long double gamma) {
+    if (gamma <= 1.0L) return 0.0L; // Gamma cannot be less than 1
+    // v = c * sqrt(1 - 1/gamma^2)
+    return C * std::sqrt(1.0L - (1.0L / (gamma * gamma)));
+}
+long double RelativityCalculator::ParseGammaInput(std::wstring input) {
+    try {
+        for (auto &c : input)
+            if (c > ) {};
     }
 }

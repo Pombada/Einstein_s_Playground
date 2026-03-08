@@ -14,7 +14,7 @@
 // Global IDs
 enum {
     ID_OPTION1 = 101, ID_OPTION2, ID_OPTION3, ID_OPTION4,
-    ID_SUBMIT = 200, ID_BACK = 300, ID_INFO = 400
+    ID_SUBMIT = 200, ID_BACK = 300, ID_INFO = 400  , ID_TOGGLE = 500
 };
 
 class UI {
@@ -25,6 +25,8 @@ public:
 
     HFONT hFontUI = nullptr, hFontTitle = nullptr;
     HBRUSH hBackBrush = nullptr, hHeaderBrush = nullptr;
+    bool isInverseMode = false;
+    HWND hBtnToggle = nullptr;
 
     UI();
     ~UI();
@@ -35,7 +37,7 @@ public:
     // UI "Scenes"
     void ShowCalculation(const std::wstring& title, const std::wstring& cue);
     void ShowMenu();
-    void ShowHelp(); // The "i" button logic
+    void ShowHelp(bool inverse); // The "i" button logic
 };
 
 #endif

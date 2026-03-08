@@ -3,6 +3,7 @@
 UI::UI() {
     hBackBrush = CreateSolidBrush(RGB(250, 250, 252));
     hHeaderBrush = CreateSolidBrush(RGB(255, 255, 255));
+
 }
 
 UI::~UI() {
@@ -14,6 +15,7 @@ UI::~UI() {
 
 void UI::Init(HWND parentHwnd) {
     hwnd = parentHwnd;
+
     hStaticTitle = CreateWindowW(L"STATIC", L"Einstein's Playground", WS_VISIBLE | WS_CHILD | SS_CENTER | SS_CENTERIMAGE, 0, 0, 0, 0, hwnd, NULL, NULL, NULL);
     hEditResult = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", L"",
     WS_CHILD | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hwnd, NULL, NULL, NULL);
@@ -22,10 +24,14 @@ void UI::Init(HWND parentHwnd) {
         menuButtons.push_back(CreateWindowW(L"BUTTON", labels[i].c_str(), WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hwnd, (HMENU)(INT_PTR)(ID_OPTION1 + i), NULL, NULL));
     }
 
+
     hEdit1 = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", L"", WS_CHILD | ES_AUTOHSCROLL, 0, 0, 0, 0, hwnd, NULL, NULL, NULL);
     hBtnSubmit = CreateWindowW(L"BUTTON", L"Calculate", WS_CHILD, 0, 0, 0, 0, hwnd, (HMENU)ID_SUBMIT, NULL, NULL);
     hBtnBack = CreateWindowW(L"BUTTON", L"Back", WS_CHILD, 0, 0, 0, 0, hwnd, (HMENU)ID_BACK, NULL, NULL);
     hBtnInfo = CreateWindowW(L"BUTTON", L"i", WS_CHILD, 0, 0, 0, 0, hwnd, (HMENU)ID_INFO, NULL, NULL);
+    hBtnToggle = CreateWindowW(L"BUTTON", L"⇅", WS_CHILD | BS_PUSHBUTTON,
+    0, 0, 0, 0, hwnd, (HMENU)ID_TOGGLE, NULL, NULL);
+
 }
 
 void UI::ShowCalculation(const std::wstring& title, const std::wstring& cue) {
@@ -33,7 +39,7 @@ void UI::ShowCalculation(const std::wstring& title, const std::wstring& cue) {
     SendMessage(hEdit1, EM_SETCUEBANNER, FALSE, (LPARAM)cue.c_str());
     SetWindowTextW(hEditResult, L"Result:");
     for (auto b : menuButtons) ShowWindow(b, SW_HIDE);
-    ShowWindow(hEdit1, SW_SHOW); ShowWindow(hBtnSubmit, SW_SHOW); ShowWindow(hBtnBack, SW_SHOW); ShowWindow(hBtnInfo, SW_SHOW); ShowWindow(hEditResult, SW_SHOW);
+    ShowWindow(hEdit1, SW_SHOW); ShowWindow(hBtnSubmit, SW_SHOW); ShowWindow(hBtnBack, SW_SHOW); ShowWindow(hBtnInfo, SW_SHOW); ShowWindow(hEditResult, SW_SHOW); ShowWindow(hBtnToggle, SW_SHOW);
 }
 
 void UI::ShowMenu() {
@@ -42,10 +48,14 @@ void UI::ShowMenu() {
     SetWindowTextW(hEdit1, L"");
     SetWindowTextW(hEditResult, L"");
     for (auto b : menuButtons) ShowWindow(b, SW_SHOW);
-    ShowWindow(hEdit1, SW_HIDE); ShowWindow(hBtnSubmit, SW_HIDE); ShowWindow(hBtnBack, SW_HIDE); ShowWindow(hBtnInfo, SW_HIDE); ShowWindow(hEditResult, SW_HIDE);
+    ShowWindow(hEdit1, SW_HIDE); ShowWindow(hBtnSubmit, SW_HIDE); ShowWindow(hBtnBack, SW_HIDE); ShowWindow(hBtnInfo, SW_HIDE); ShowWindow(hEditResult, SW_HIDE); ShowWindow(hBtnToggle, SW_HIDE);;
 }
 
-void UI::ShowHelp() {
+void UI::ShowHelp(bool inverse) {
+    if (inverse) {
+        MessageBoxW(hwnd, L"You are currently on Gamma translation to velocity mode! \n\nGamma can't be lower than 1.\n\nSimply enter Gamma in numbers and get your speed in M/S!" , L"Help", MB_OK | MB_ICONINFORMATION);
+        return;
+    }
     MessageBoxW(hwnd, L"Enter velocity in m/s. Must be 0 <= v < c.\nC = 299,792,458 m/s\nThere are 3 ways to enter velocity!\n\n1. You can enter percentage of C. \nFor example: 90% will translate to 269,813,212 m/s \n\n 2. "
                       "You can enter numbers with letter K, or M after them \n k translate for 1,000 and M to 1,000,000 so 8.2K = 8,200 m/s\n\n 3. You can literally type the speed In meters (just numbers)  ", L"Help", MB_OK | MB_ICONINFORMATION);
 }
@@ -53,7 +63,6 @@ void UI::ShowHelp() {
 void UI::UpdateLayout() {
     // 1. Safety Check: If buttons aren't created yet, don't try to move them
     if (menuButtons.empty() || !hwnd) return;
-
     RECT r;
     GetClientRect(hwnd, &r);
     int w = r.right;
@@ -98,6 +107,7 @@ void UI::UpdateLayout() {
     MoveWindow(hEditResult, centerX - (editW / 2), (int)(180 * sy), editW, (int)(35 * sy), TRUE);
     MoveWindow(hBtnSubmit, centerX - (int)(110 * sx), (int)(225 * sy), (int)(100 * sx), (int)(40 * sy), TRUE);
     MoveWindow(hBtnBack, centerX + (int)(10 * sx), (int)(225 * sy), (int)(100 * sx), (int)(40 * sy), TRUE);
+    MoveWindow(hBtnToggle, centerX + (editW / 2) + 5, (int)(180 * sy), (int)(40 * sx), (int)(35 * sy), TRUE);
 
     // 7. Apply the new Fonts
     auto apply = [&](HWND h, HFONT f) { if(h) SendMessage(h, WM_SETFONT, (WPARAM)f, TRUE); };
