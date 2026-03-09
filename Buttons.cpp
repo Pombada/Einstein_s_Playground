@@ -3,6 +3,9 @@
 //
 #include "Buttons.h"
 #include <cmath>
+#include <iostream>
+#include <ostream>
+#include <stdexcept>
 #define C 299792458.0L
 long double RelativityCalculator::CalculateGamma(long double v) {
     if (v < 0 || v >= C) return -1.0;
@@ -15,7 +18,9 @@ long double RelativityCalculator::ParseAndCalculate(std::wstring input) {
 
     double multiplier = 1.0;
     double baseValue = 0.0;
-
+    if (input.length() > 1 && input[0] == L'0' && iswdigit(input[1])) {
+        return -2.0L;
+    }
     try {
         // 2. Check for Percentage
         size_t pctPos = input.find(L"%");
@@ -50,7 +55,28 @@ long double RelativityCalculator::CalculateSpeedFromGamma(long double gamma) {
 }
 long double RelativityCalculator::ParseGammaInput(std::wstring input) {
     try {
-        for (auto &c : input)
-            if (c > ) {};
+        if (input.empty()) return -2.0L;
+        if (input.length() > 1 && input[0] == L'0' && iswdigit(input[1])) {
+            return -2.0L;
+        }
+        // Validate: only digits and one decimal point allowed
+        int decimalCount = 0;
+        for (auto &c : input) {
+            if (c == L'.') {
+                decimalCount++;
+                if (decimalCount > 1) throw std::invalid_argument("Too many decimals");
+            } else if (!iswdigit(c)) {
+                throw std::invalid_argument("Invalid character");
+            }
+        }
+
+        long double g = std::stold(input);
+
+        if (g < 1.0L) return -1.0L; // Gamma must be >= 1
+
+        return CalculateSpeedFromGamma(g);
+
+    } catch (...) {
+        return -2.0L; // General error code for "Invalid Input"
     }
 }

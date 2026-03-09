@@ -32,34 +32,35 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             if (id == ID_SUBMIT) {
                 wchar_t buffer[128];
                 GetWindowTextW(ui.hEdit1, buffer, 128);
-
+                std::wstring input(buffer);
                 std::wstringstream ss;
+
                 if (ui.isInverseMode) {
                     // Mode 1: Gamma -> Speed
-                    long double g = std::stold(buffer);
-                    long double v = RelativityCalculator::CalculateSpeedFromGamma(g);
-                    if (g < 1.0) {
-                        SetWindowTextW(ui.hEditResult, L"Gamma must be >= 1!");
-                    }else {
-                        ss << L"Speed: " << std::fixed << std::setprecision(2) << v << L" m/s";
+                    long double result = RelativityCalculator::ParseGammaInput(input);
+
+                    if (result == -1.0L) {
+                        SetWindowTextW(ui.hEditResult, L"Error: Gamma must be >= 1");
+                    } else if (result == -2.0L) {
+                        SetWindowTextW(ui.hEditResult, L"Error: Invalid Input");
+                    } else {
+                        ss << L"Speed: " << std::fixed << std::setprecision(2) << result << L" m/s";
                         SetWindowTextW(ui.hEditResult, ss.str().c_str());
                     }
                 } else {
-                    // Mode 2: Speed -> Gamma
-                    long double result = RelativityCalculator::ParseAndCalculate(buffer);
-                    if (result == -1.0) {
+                    // Mode 2: Speed -> Gamma (Your existing code)
+                    long double result = RelativityCalculator::ParseAndCalculate(input);
+                    if (result == -1.0L) {
                         SetWindowTextW(ui.hEditResult, L"Error: v must be < c and >= 0");
-                    }
-                    else if (result == -2.0) {
+                    } else if (result == -2.0L) {
                         SetWindowTextW(ui.hEditResult, L"Error: Invalid input");
-                    }
-                    else {
+                    } else {
                         ss << L"Gamma: " << std::fixed << std::setprecision(15) << result;
                         SetWindowTextW(ui.hEditResult, ss.str().c_str());
                     }
+                }
+                SetWindowTextW(ui.hEdit1, L""); // Clear input
             }
-                SetWindowTextW(ui.hEdit1, L"");
-        }
     }
         case WM_SIZE:
             ui.UpdateLayout();
