@@ -23,10 +23,11 @@ public:
     HWND hEditResult = nullptr, hStaticTitle = nullptr, hEdit1 = nullptr, hBtnSubmit = nullptr, hBtnBack = nullptr, hBtnInfo = nullptr;
     std::vector<HWND> menuButtons;
 
-    HFONT hFontUI = nullptr, hFontTitle = nullptr;
+    HFONT hFontUI = nullptr, hFontTitle = nullptr , hFontToggle = nullptr;
     HBRUSH hBackBrush = nullptr, hHeaderBrush = nullptr;
     bool isInverseMode = false;
     HWND hBtnToggle = nullptr;
+
 
     UI();
     ~UI();

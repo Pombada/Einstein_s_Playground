@@ -68,6 +68,12 @@ void UI::UpdateLayout() {
     int w = r.right;
     int h = r.bottom;
 
+    // --- NEW: Optimization Check ---
+    // If the window size hasn't changed, don't recreate everything!
+    static int lastW = 0, lastH = 0;
+    if (w == lastW && h == lastH) return;
+    lastW = w; lastH = h;
+    // -------------------------------
     // 2. Scaling factors (500x400 is our base design size)
     float sx = w / 500.0f;
     float sy = h / 400.0f;
@@ -76,11 +82,14 @@ void UI::UpdateLayout() {
     // 3. Recreate Fonts based on new scale
     if (hFontUI) DeleteObject(hFontUI);
     if (hFontTitle) DeleteObject(hFontTitle);
+    if (hFontToggle) DeleteObject(hFontToggle);
 
     hFontUI = CreateFontW((int)(18 * s), 0, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE,
                           DEFAULT_CHARSET, 0, 0, CLEARTYPE_QUALITY, 0, L"Segoe UI");
     hFontTitle = CreateFontW((int)(28 * s), 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
                             DEFAULT_CHARSET, 0, 0, CLEARTYPE_QUALITY, 0, L"Segoe UI");
+    hFontToggle = CreateFontW((int)(24 * s), 0, 0, 0, FW_HEAVY, FALSE, FALSE, FALSE,
+                             DEFAULT_CHARSET, 0, 0, CLEARTYPE_QUALITY, 0, L"Segoe UI Symbol");
 
     // 4. Position: Header Area
     MoveWindow(hStaticTitle, 0, 0, w, (int)(80 * sy), TRUE);
@@ -110,12 +119,20 @@ void UI::UpdateLayout() {
     MoveWindow(hBtnToggle, centerX + (editW / 2) + 5, (int)(180 * sy), (int)(40 * sx), (int)(35 * sy), TRUE);
 
     // 7. Apply the new Fonts
-    auto apply = [&](HWND h, HFONT f) { if(h) SendMessage(h, WM_SETFONT, (WPARAM)f, TRUE); };
+    auto apply = [&](HWND h, HFONT f) {
+        if(h) SendMessage(h, WM_SETFONT, (WPARAM)f, TRUE);
+    };
 
     apply(hStaticTitle, hFontTitle);
-    for (auto b : menuButtons) apply(b, hFontUI);
     apply(hEdit1, hFontUI);
+    apply(hEditResult, hFontUI);
     apply(hBtnSubmit, hFontUI);
     apply(hBtnBack, hFontUI);
     apply(hBtnInfo, hFontUI);
+    apply(hBtnToggle, hFontToggle); // Use the heavy symbol font here
+
+    for (auto b : menuButtons) apply(b, hFontUI);
+
+    // Force a repaint so the changes show up immediately
+    InvalidateRect(hwnd, NULL, TRUE);
 }

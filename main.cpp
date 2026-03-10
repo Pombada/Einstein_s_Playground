@@ -76,7 +76,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int nShow) {
     // 1. Initialize Common Controls (for modern button styles)
     InitCommonControls();
-
+    int windowWidth = 800;
+    int windowHeight = 600;
     // 2. Register the Window Class
     WNDCLASSW wc = {};
     wc.lpfnWndProc   = WindowProc;
@@ -85,6 +86,12 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int nShow)
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1); // Uses the brush created in UI constructor
     wc.lpszClassName = L"EinsteinPlaygroundClass";
 
+    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+    // Calculate the center position
+    int posX = (screenWidth - windowWidth) / 2;
+    int posY = (screenHeight - windowHeight) / 2;
     RegisterClassW(&wc);
 
     // 3. Create the Actual Window
@@ -93,7 +100,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int nShow)
         L"EinsteinPlaygroundClass",
         L"Einstein's Playground",
         WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT, 500, 400,
+        posX, posY, windowWidth, windowHeight,
         NULL, NULL, hInst, NULL
     );
 
