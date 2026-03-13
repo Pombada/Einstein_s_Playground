@@ -19,8 +19,7 @@ enum {
 
 class UI {
 public:
-    HWND hwnd = nullptr;
-    HWND hEditResult = nullptr, hStaticTitle = nullptr, hEdit1 = nullptr, hBtnSubmit = nullptr, hBtnBack = nullptr, hBtnInfo = nullptr;
+    HWND hwnd = nullptr, hEditResult = nullptr, hStaticTitle = nullptr, hEdit1 = nullptr, hBtnSubmit = nullptr, hBtnBack = nullptr, hBtnInfo = nullptr;
     std::vector<HWND> menuButtons;
 
     HFONT hFontUI = nullptr, hFontTitle = nullptr , hFontToggle = nullptr;
