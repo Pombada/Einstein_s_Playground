@@ -14,14 +14,18 @@
 // Global IDs
 enum {
     TIME_DILATION = 101, SETTINGS, LOGS,
-    ID_SUBMIT = 200, ID_BACK = 300, ID_INFO = 400  , ID_TOGGLE = 500
+    ID_SUBMIT = 200, ID_BACK = 300, ID_INFO = 400  , ID_TOGGLE = 500 , CALC_GAMMA = 600
+};
+struct CalculatorControls {
+    HWND hEditResult = nullptr,hEditInput = nullptr, hBtnSubmit = nullptr, hBtnBack = nullptr, hBtnInfo = nullptr, hwnd = nullptr,hBtnToggle;
 };
 
 class UI {
 public:
-    HWND hwnd = nullptr, hEditResult = nullptr, hStaticTitle = nullptr, hEdit1 = nullptr, hBtnSubmit = nullptr, hBtnBack = nullptr, hBtnInfo = nullptr;
+    CalculatorControls CalcButtons;
+    HWND hwnd = nullptr, hGammaCalculator = nullptr, hEditResult = nullptr, hStaticTitle = nullptr, hEdit1 = nullptr, hBtnSubmit = nullptr, hBtnBack = nullptr;
     std::vector<HWND> menuButtons;
-
+    std::vector<HWND> timeDilationButtons;
     HFONT hFontUI = nullptr, hFontTitle = nullptr , hFontToggle = nullptr;
     HBRUSH hBackBrush = nullptr, hHeaderBrush = nullptr;
     bool isInverseMode = false;
@@ -32,10 +36,14 @@ public:
     ~UI();
 
     void Init(HWND parentHwnd);
+    void InitCalculatorWindow(HWND calcHwnd);
     void UpdateLayout();
+    void Font_Update();
+    void ApplyFonts(const std::vector<HWND>& controls, HFONT font);
 
     // UI "Scenes"
     void ShowCalculation(const std::wstring& title, const std::wstring& cue);
+    void showTimeDilation(const std::wstring& title);
     void ShowMenu();
     void ShowHelp(bool inverse); // The "i" button logic
 };

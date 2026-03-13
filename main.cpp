@@ -8,13 +8,25 @@
 UI ui;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
+
     switch (msg) {
         case WM_CREATE:
             ui.Init(hwnd);
             break;
         case WM_COMMAND: {
             int id = LOWORD(wp);
-            if (id == TIME_DILATION) ui.ShowCalculation(L"Enter velocity in m/s", L"Enter m/s...");
+            if (id == TIME_DILATION) ui.showTimeDilation(L"Welcome to Time Dilation!");
+            if (id == CALC_GAMMA) {
+                HWND hCalc = CreateWindowExW(
+                0,
+                L"GammaCalculatorClass", // Must be registered in WinMain
+                L"Gamma Calculator",
+                WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                CW_USEDEFAULT, CW_USEDEFAULT, 800, 800,
+                hwnd, // Main window is the owner
+                NULL, (HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE), NULL
+            );
+            }
             if (id == ID_INFO)    ui.ShowHelp(ui.isInverseMode);
             if (id == ID_BACK)    ui.ShowMenu();
             if (id == ID_TOGGLE) {
@@ -70,6 +82,22 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             break;
         default:
             return DefWindowProc(hwnd, msg, wp, lp);
+
+    }
+
+
+    return 0;
+}
+LRESULT CALLBACK GammaWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
+    switch (msg) {
+        case WM_CREATE:
+            // You can initialize sub-buttons here!
+            break;
+        case WM_CLOSE:
+            DestroyWindow(hwnd); // Closes ONLY this window
+            break;
+        default:
+            return DefWindowProc(hwnd, msg, wp, lp);
     }
     return 0;
 }
@@ -85,6 +113,13 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int nShow)
     wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1); // Uses the brush created in UI constructor
     wc.lpszClassName = L"EinsteinPlaygroundClass";
+    WNDCLASSW gwc = {};
+    gwc.lpfnWndProc   = GammaWindowProc;
+    gwc.hInstance     = hInst;
+    gwc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+    gwc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    gwc.lpszClassName = L"GammaCalculatorClass";
+    RegisterClassW(&gwc);
 
     int screenWidth = GetSystemMetrics(SM_CXSCREEN);
     int screenHeight = GetSystemMetrics(SM_CYSCREEN);
