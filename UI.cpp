@@ -20,11 +20,9 @@ void UI::Init(HWND parentHwnd) {
     for (int i = 0; i < 3; ++i) {
         menuButtons.push_back(CreateWindowW(L"BUTTON", labels[i].c_str(), WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hwnd, (HMENU)(INT_PTR)(TIME_DILATION + i), NULL, NULL));
     }
-    std::vector<std::wstring> timeDilationButtonsLabels = {L"Gamma Factor Calculator", L"Back"};
-    for (int i = 0; i < 2; ++i) {
-        timeDilationButtons.push_back(CreateWindowW(L"BUTTON",timeDilationButtonsLabels[i].c_str(),WS_VISIBLE | WS_CHILD,0,0,0,0,hwnd,(HMENU)(INT_PTR)(TIME_DILATION+199*i),NULL,NULL));
-    }
     hGammaCalculator = CreateWindowExW(WS_EX_APPWINDOW,L"BUTTON", L"Gamma Factor Calculator",WS_CHILD,0,0,0,0,hwnd,(HMENU)CALC_GAMMA,NULL,NULL);
+    hBtnBack = CreateWindowW(L"BUTTON",L"Back",WS_CHILD,0,0,0,0,hwnd,(HMENU)ID_BACK,NULL,NULL);
+
 }
 
 void UI::ShowCalculation(const std::wstring& title, const std::wstring& cue) {
@@ -107,6 +105,7 @@ void UI::UpdateLayout() {
     // 5. Position: Menu Buttons (Grid layout)
     int btnW = (int)(160 * sx), btnH = (int)(50 * sy);
     int centerX = w / 2;
+
     //Time dilation button
     MoveWindow(menuButtons[0], centerX - btnW/2, (int)(120 * sy), btnW, btnH, TRUE);
     //settings,latest logs buttons.
@@ -117,10 +116,7 @@ void UI::UpdateLayout() {
     int editW = (int)(320 * sx);
 
     MoveWindow(hEdit1, centerX - ((editW-140) / 2), (int)(130 * sy), editW-160, (int)(35 * sy), TRUE);
-
-    // The "i" button sits exactly to the right of the input box
     MoveWindow(hBtnBack, centerX + (int)(30 * sx), (int)(275 * sy), (int)(100 * sx), (int)(40 * sy), TRUE);
-    MoveWindow(hBtnToggle, centerX + (editW / 2) + 5, (int)(180 * sy), (int)(40 * sx), (int)(35 * sy), TRUE);
     MoveWindow(hGammaCalculator,centerX - btnW + (int)(10 * sx),(int)(275 * sy),(int)(150 * sx),(int)(40 * sy), TRUE);
 
     Font_Update();
