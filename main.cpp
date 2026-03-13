@@ -5,7 +5,7 @@
 #include <sstream>
 #pragma comment(lib, "comctl32.lib")
 
-UI ui; // Short and sweet
+UI ui;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     switch (msg) {
@@ -14,7 +14,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             break;
         case WM_COMMAND: {
             int id = LOWORD(wp);
-            if (id == ID_OPTION1) ui.ShowCalculation(L"Enter velocity in m/s", L"Enter m/s...");
+            if (id == TIME_DILATION) ui.ShowCalculation(L"Enter velocity in m/s", L"Enter m/s...");
             if (id == ID_INFO)    ui.ShowHelp(ui.isInverseMode);
             if (id == ID_BACK)    ui.ShowMenu();
             if (id == ID_TOGGLE) {

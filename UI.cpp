@@ -19,9 +19,9 @@ void UI::Init(HWND parentHwnd) {
     hStaticTitle = CreateWindowW(L"STATIC", L"Einstein's Playground", WS_VISIBLE | WS_CHILD | SS_CENTER | SS_CENTERIMAGE, 0, 0, 0, 0, hwnd, NULL, NULL, NULL);
     hEditResult = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", L"",
     WS_CHILD | ES_READONLY | ES_CENTER, 0, 0, 0, 0, hwnd, NULL, NULL, NULL);
-    std::vector<std::wstring> labels = { L"Calculate Gamma Factor", L"Time Dilation", L"Latest Logs", L"Settings" };
-    for (int i = 0; i < 4; ++i) {
-        menuButtons.push_back(CreateWindowW(L"BUTTON", labels[i].c_str(), WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hwnd, (HMENU)(INT_PTR)(ID_OPTION1 + i), NULL, NULL));
+    std::vector<std::wstring> labels = {  L"Time Dilation", L"Latest Logs", L"Settings" };
+    for (int i = 0; i < 3; ++i) {
+        menuButtons.push_back(CreateWindowW(L"BUTTON", labels[i].c_str(), WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hwnd, (HMENU)(INT_PTR)(TIME_DILATION + i), NULL, NULL));
     }
 
 
