@@ -87,37 +87,26 @@ void UI::UpdateLayout() {
     if (menuButtons.empty() || !hwnd) return;
     RECT r;
     GetClientRect(hwnd, &r);
-    int w = r.right;
-    int h = r.bottom;
 
-    // --- NEW: Optimization Check ---
-    // If the window size hasn't changed, don't recreate everything!
-    static int lastW = 0, lastH = 0;
-    if (w == lastW && h == lastH) return;
-    lastW = w; lastH = h;
-    // -------------------------------
-    // 2. Scaling factors (500x400 is our base design size)
-    float sx = w / 500.0f;
-    float sy = h / 400.0f;
+    winW = r.right;
+    winH = r.bottom;
+    headerH = winH * 0.2f;
+    btnW = winW * 0.3f;
+    btnH = winH * 0.1f;
+    spacing = winW * 0.02f;
 
+    int centerX = winW / 2;
     // 4. Position: Header Area
-    MoveWindow(hStaticTitle, 0, 0, w, (int)(80 * sy), TRUE);
-    // 5. Position: Menu Buttons (Grid layout)
-    int btnW = (int)(160 * sx), btnH = (int)(50 * sy);
-    int centerX = w / 2;
+    // Header
+    MoveWindow(hStaticTitle, 0, 0, winW, headerH, TRUE);
 
-    //Time dilation button
-    MoveWindow(menuButtons[0], centerX - btnW/2, (int)(120 * sy), btnW, btnH, TRUE);
-    //settings,latest logs buttons.
-    MoveWindow(menuButtons[1], centerX + 10,        (int)(180 * sy), btnW, btnH, TRUE);
-    MoveWindow(menuButtons[2], centerX - btnW - 10, (int)(180 * sy), btnW, btnH, TRUE);
+    // Buttons
+    MoveWindow(menuButtons[0], centerX - btnW/2, headerH + winH*0.05f, btnW, btnH, TRUE);
+    MoveWindow(menuButtons[1], centerX + spacing, headerH + winH*0.2f, btnW, btnH, TRUE);
+    MoveWindow(menuButtons[2], centerX - btnW - spacing, headerH + winH*0.2f, btnW, btnH, TRUE);
 
-    // 6. Position: Form Controls (Input mode)
-    int editW = (int)(320 * sx);
-
-    MoveWindow(hEdit1, centerX - ((editW-140) / 2), (int)(130 * sy), editW-160, (int)(35 * sy), TRUE);
-    MoveWindow(hBtnBack, centerX + (int)(30 * sx), (int)(275 * sy), (int)(100 * sx), (int)(40 * sy), TRUE);
-    MoveWindow(hGammaCalculator,centerX - btnW + (int)(10 * sx),(int)(275 * sy),(int)(150 * sx),(int)(40 * sy), TRUE);
+    MoveWindow(hBtnBack, centerX + spacing*3 , winH*0.6f, btnW*0.5, btnH, TRUE);
+    MoveWindow(hGammaCalculator,centerX - btnW ,winH*0.6f,btnW,btnH, TRUE);
 
     Font_Update();
     ApplyFonts({hEdit1, hEditResult, hBtnSubmit, hBtnBack, hGammaCalculator}, hFontUI);
@@ -153,15 +142,16 @@ void UI::UpdateLayoutCalculator() {
     int screenH = GetSystemMetrics(SM_CYSCREEN);
     int posX = (screenW - winW) / 2;
     int posY = (screenH - winH) / 2;
-    int btnw = 100;
+    int btnW = 100;
+    int btnH = 40;
 
-    MoveWindow(CalcButtons.hStaticTitle, posX, posY, winW, winH, TRUE);
-    MoveWindow(CalcButtons.hBtnInfo, posX, posY, winW, winH, TRUE);
-    MoveWindow(CalcButtons.hBtnBack, posX, posY, winW, winH, TRUE);
-    MoveWindow(CalcButtons.hBtnSubmit, posX, posY, winW, winH, TRUE);
-    MoveWindow(CalcButtons.hEditInput, posX, posY, winW, winH, TRUE);
-    MoveWindow(CalcButtons.hBtnToggle, posX, posY, winW, winH, TRUE);
-    MoveWindow(CalcButtons.hEditResult, posX, posY, winW, winH, TRUE);
+    MoveWindow(CalcButtons.hStaticTitle, posX, posY, btnW, btnH, TRUE);
+    MoveWindow(CalcButtons.hBtnInfo, posX, posY, btnW, btnH, TRUE);
+    MoveWindow(CalcButtons.hBtnBack, posX, posY, btnW, btnH, TRUE);
+    MoveWindow(CalcButtons.hBtnSubmit, posX, posY, btnW, btnH, TRUE);
+    MoveWindow(CalcButtons.hEditInput, posX, posY, btnW, btnH, TRUE);
+    MoveWindow(CalcButtons.hBtnToggle, posX, posY, btnW, btnH, TRUE);
+    MoveWindow(CalcButtons.hEditResult, posX, posY, btnW, btnH, TRUE);
     Font_Update();
     ApplyFonts({CalcButtons.hEditInput, CalcButtons.hEditResult, CalcButtons.hBtnSubmit, CalcButtons.hBtnBack}, hFontUI);
     ApplyFonts({CalcButtons.hStaticTitle}, hFontTitle);

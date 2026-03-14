@@ -31,6 +31,11 @@ public:
     bool isInverseMode = false;
     HWND hBtnToggle = nullptr;
 
+    int winW, winH;          // current window size
+    int btnW, btnH;          // button sizes
+    int spacing;             // spacing between buttons
+    int headerH;
+
 
     UI();
     ~UI();
