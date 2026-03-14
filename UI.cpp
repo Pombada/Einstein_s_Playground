@@ -129,19 +129,41 @@ void UI::UpdateLayout() {
     InvalidateRect(hwnd, NULL, TRUE);
 }
 void UI::InitCalculatorWindow(HWND calcHwnd) {
+
     CalcButtons.hwnd = calcHwnd;
-    CalcButtons.hEditInput = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", L"", WS_CHILD | ES_AUTOHSCROLL, 20, 50, 300, 35, calcHwnd, NULL, NULL, NULL);
-    CalcButtons.hBtnSubmit = CreateWindowW(L"BUTTON", L"Calculate", WS_CHILD | WS_VISIBLE, 20, 100, 100, 40, calcHwnd, (HMENU)ID_SUBMIT, NULL, NULL);
+    CalcButtons.hEditInput = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", L"", WS_CHILD | ES_AUTOHSCROLL, 0, 0, 0, 0, calcHwnd, NULL, NULL, NULL);
+    CalcButtons.hBtnSubmit = CreateWindowW(L"BUTTON", L"Calculate", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, calcHwnd, (HMENU)ID_SUBMIT, NULL, NULL);
     CalcButtons.hBtnBack = CreateWindowW(L"BUTTON", L"Back", WS_CHILD, 0, 0, 0, 0, calcHwnd, (HMENU)ID_BACK, NULL, NULL);
     CalcButtons.hBtnInfo = CreateWindowW(L"BUTTON", L"i", WS_CHILD, 0, 0, 0, 0, calcHwnd, (HMENU)ID_INFO, NULL, NULL);
     CalcButtons.hBtnToggle = CreateWindowW(L"BUTTON", L"⇅", WS_CHILD | BS_PUSHBUTTON,
-    0, 0, 0, 0, hwnd, (HMENU)ID_TOGGLE, NULL, NULL);
+    0, 0, 0, 0, calcHwnd, (HMENU)ID_TOGGLE, NULL, NULL);
     hEditResult = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", L"",
     WS_CHILD | ES_READONLY | ES_CENTER, 20, 150, 300, 35, calcHwnd, NULL, NULL, NULL);
     // Set titles/cues immediately
 }
-void::UI::showTimeDilation(const std::wstring& title ) {
+void UI::showTimeDilation(const std::wstring& title ) {
     SetWindowTextW(hStaticTitle, title.c_str());
     for (auto b : menuButtons) ShowWindow(b, SW_HIDE);
     ShowWindow(hBtnBack, SW_SHOW); ShowWindow(hGammaCalculator, SW_SHOW);
+}
+void UI::UpdateLayoutCalculator() {
+    int winW = 600;
+    int winH = 500;
+    int screenW = GetSystemMetrics(SM_CXSCREEN);
+    int screenH = GetSystemMetrics(SM_CYSCREEN);
+    int posX = (screenW - winW) / 2;
+    int posY = (screenH - winH) / 2;
+    int btnw = 100;
+
+    MoveWindow(CalcButtons.hStaticTitle, posX, posY, winW, winH, TRUE);
+    MoveWindow(CalcButtons.hBtnInfo, posX, posY, winW, winH, TRUE);
+    MoveWindow(CalcButtons.hBtnBack, posX, posY, winW, winH, TRUE);
+    MoveWindow(CalcButtons.hBtnSubmit, posX, posY, winW, winH, TRUE);
+    MoveWindow(CalcButtons.hEditInput, posX, posY, winW, winH, TRUE);
+    MoveWindow(CalcButtons.hBtnToggle, posX, posY, winW, winH, TRUE);
+    MoveWindow(CalcButtons.hEditResult, posX, posY, winW, winH, TRUE);
+    Font_Update();
+    ApplyFonts({CalcButtons.hEditInput, CalcButtons.hEditResult, CalcButtons.hBtnSubmit, CalcButtons.hBtnBack}, hFontUI);
+    ApplyFonts({CalcButtons.hStaticTitle}, hFontTitle);
+    ApplyFonts({hBtnToggle}, hFontToggle);
 }
