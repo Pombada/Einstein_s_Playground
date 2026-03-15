@@ -120,6 +120,8 @@ void UI::UpdateLayout() {
 void UI::InitCalculatorWindow(HWND calcHwnd) {
 
     CalcButtons.hwnd = calcHwnd;
+    CalcButtons.hStaticTitle = CreateWindowW(L"STATIC", L"Please enter ", WS_VISIBLE | WS_CHILD | SS_CENTER | SS_CENTERIMAGE, 0, 0, 0, 0, CalcButtons.hwnd, NULL, NULL, NULL);
+    CalcButtons.hEditResult = CreateWindowExW(WS_EX_CLIENTEDGE,L"EDIT",L"",WS_CHILD | ES_READONLY | ES_CENTER,0,0,0,0,calcHwnd,NULL,NULL,NULL);
     CalcButtons.hEditInput = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", L"", WS_CHILD | ES_AUTOHSCROLL, 0, 0, 0, 0, calcHwnd, NULL, NULL, NULL);
     CalcButtons.hBtnSubmit = CreateWindowW(L"BUTTON", L"Calculate", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, calcHwnd, (HMENU)ID_SUBMIT, NULL, NULL);
     CalcButtons.hBtnBack = CreateWindowW(L"BUTTON", L"Back", WS_CHILD, 0, 0, 0, 0, calcHwnd, (HMENU)ID_BACK, NULL, NULL);
@@ -136,22 +138,24 @@ void UI::showTimeDilation(const std::wstring& title ) {
     ShowWindow(hBtnBack, SW_SHOW); ShowWindow(hGammaCalculator, SW_SHOW);
 }
 void UI::UpdateLayoutCalculator() {
-    int winW = 600;
-    int winH = 500;
-    int screenW = GetSystemMetrics(SM_CXSCREEN);
-    int screenH = GetSystemMetrics(SM_CYSCREEN);
-    int posX = (screenW - winW) / 2;
-    int posY = (screenH - winH) / 2;
-    int btnW = 100;
-    int btnH = 40;
+    RECT r;
+    GetClientRect(hwnd, &r);
+    winW = r.right;
+    winH = r.bottom;
+    headerH = winH * 0.2f;
+    btnW = winW * 0.3f;
+    btnH = winH * 0.1f;
+    spacing = winW * 0.02f;
+    int centerX = winW / 2;
+    int centerY = winH / 2;
 
-    MoveWindow(CalcButtons.hStaticTitle, posX, posY, btnW, btnH, TRUE);
-    MoveWindow(CalcButtons.hBtnInfo, posX, posY, btnW, btnH, TRUE);
-    MoveWindow(CalcButtons.hBtnBack, posX, posY, btnW, btnH, TRUE);
-    MoveWindow(CalcButtons.hBtnSubmit, posX, posY, btnW, btnH, TRUE);
-    MoveWindow(CalcButtons.hEditInput, posX, posY, btnW, btnH, TRUE);
-    MoveWindow(CalcButtons.hBtnToggle, posX, posY, btnW, btnH, TRUE);
-    MoveWindow(CalcButtons.hEditResult, posX, posY, btnW, btnH, TRUE);
+    MoveWindow(CalcButtons.hStaticTitle, 0, 0, winW, headerH, TRUE);
+    MoveWindow(CalcButtons.hBtnInfo, centerX + btnW*0.5 + spacing*3, centerY, btnW*0.3, btnH*0.85, TRUE);
+    MoveWindow(CalcButtons.hBtnBack, centerX + spacing, centerY+btnH*2, btnW*0.5, btnH, TRUE);
+    MoveWindow(CalcButtons.hBtnSubmit, centerX - btnW, centerY+btnH*2, btnW, btnH, TRUE);
+    MoveWindow(CalcButtons.hEditInput, centerX - btnW, centerY, btnW*1.5 + spacing*2, btnH*0.85, TRUE);
+    MoveWindow(CalcButtons.hBtnToggle, centerX + spacing*3 + btnW*0.5, centerY+ btnH, btnW*0.3, btnH*0.85, TRUE);
+    MoveWindow(CalcButtons.hEditResult, centerX - btnW, centerY + btnH, btnW*1.5 + spacing*2, btnH*0.85, TRUE);
     Font_Update();
     ApplyFonts({CalcButtons.hEditInput, CalcButtons.hEditResult, CalcButtons.hBtnSubmit, CalcButtons.hBtnBack}, hFontUI);
     ApplyFonts({CalcButtons.hStaticTitle}, hFontTitle);

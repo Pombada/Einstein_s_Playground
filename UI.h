@@ -17,7 +17,8 @@ enum {
     ID_SUBMIT = 200, ID_BACK = 300, ID_INFO = 400  , ID_TOGGLE = 500 , CALC_GAMMA = 600
 };
 struct CalculatorControls {
-    HWND hEditResult = nullptr,hEditInput = nullptr, hBtnSubmit = nullptr, hBtnBack = nullptr, hBtnInfo = nullptr, hwnd = nullptr,hBtnToggle, hStaticTitle = nullptr;
+    HWND hEditResult = nullptr,hEditInput = nullptr, hBtnSubmit = nullptr, hBtnBack = nullptr,
+    hBtnInfo = nullptr, hwnd = nullptr,hBtnToggle, hStaticTitle = nullptr;
 };
 
 class UI {
