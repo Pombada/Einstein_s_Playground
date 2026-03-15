@@ -26,9 +26,9 @@ void UI::Init(HWND parentHwnd) {
 }
 
 void UI::ShowCalculation(const std::wstring& title, const std::wstring& cue) {
-    SetWindowTextW(hStaticTitle, title.c_str());
+    SetWindowTextW(CalcButtons.hStaticTitle, title.c_str());
     SendMessage(CalcButtons.hEditInput, EM_SETCUEBANNER, FALSE, (LPARAM)cue.c_str());
-    SetWindowTextW(hEditResult, L"Result:");
+    SetWindowTextW(CalcButtons.hEditResult, L"Result:");
     for (auto b : menuButtons) ShowWindow(b, SW_HIDE);
     ShowWindow(CalcButtons.hEditInput, SW_SHOW); ShowWindow(CalcButtons.hBtnSubmit, SW_SHOW); ShowWindow(CalcButtons.hBtnBack, SW_SHOW);
     ShowWindow(CalcButtons.hBtnInfo, SW_SHOW);ShowWindow(CalcButtons.hEditResult, SW_SHOW); ShowWindow(CalcButtons.hBtnToggle, SW_SHOW);
@@ -46,15 +46,15 @@ void UI::ShowMenu() {
 
 void UI::ShowHelp(bool inverse) {
     if (inverse) {
-        MessageBoxW(hwnd, L"You are currently on Gamma translation to velocity mode! \n\nGamma can't be lower than 1.\n\nSimply enter Gamma in numbers and get your speed in M/S!" , L"Help", MB_OK | MB_ICONINFORMATION);
+        MessageBoxW(CalcButtons.hwnd, L"You are currently on Gamma translation to velocity mode! \n\nGamma can't be lower than 1.\n\nSimply enter Gamma in numbers and get your speed in M/S!" , L"Help", MB_OK | MB_ICONINFORMATION);
         return;
     }
-    MessageBoxW(hwnd, L"Enter velocity in m/s. Must be 0 <= v < c.\nC = 299,792,458 m/s\nThere are 3 ways to enter velocity!\n\n1. You can enter percentage of C. \nFor example: 90% will translate to 269,813,212 m/s \n\n 2. "
+    MessageBoxW(CalcButtons.hwnd, L"Enter velocity in m/s. Must be 0 <= v < c.\nC = 299,792,458 m/s\nThere are 3 ways to enter velocity!\n\n1. You can enter percentage of C. \nFor example: 90% will translate to 269,813,212 m/s \n\n 2. "
                       "You can enter numbers with letter K, or M after them \n k translate for 1,000 and M to 1,000,000 so 8.2K = 8,200 m/s\n\n 3. You can literally type the speed In meters (just numbers)  ", L"Help", MB_OK | MB_ICONINFORMATION);
 }
-void UI::Font_Update() {
+void UI::Font_Update(HWND targetHwnd) {
     RECT r;
-    GetClientRect(hwnd, &r);
+    GetClientRect(targetHwnd, &r);
     int w = r.right;
     int h = r.bottom;
 
@@ -120,7 +120,7 @@ void UI::UpdateLayout() {
 void UI::InitCalculatorWindow(HWND calcHwnd) {
 
     CalcButtons.hwnd = calcHwnd;
-    CalcButtons.hStaticTitle = CreateWindowW(L"STATIC", L"Please enter ", WS_VISIBLE | WS_CHILD | SS_CENTER | SS_CENTERIMAGE, 0, 0, 0, 0, CalcButtons.hwnd, NULL, NULL, NULL);
+    CalcButtons.hStaticTitle = CreateWindowW(L"STATIC", L"Enter velocity in m/s ", WS_VISIBLE | WS_CHILD | SS_CENTER | SS_CENTERIMAGE, 0, 0, 0, 0, CalcButtons.hwnd, NULL, NULL, NULL);
     CalcButtons.hEditResult = CreateWindowExW(WS_EX_CLIENTEDGE,L"EDIT",L"",WS_CHILD | ES_READONLY | ES_CENTER,0,0,0,0,calcHwnd,NULL,NULL,NULL);
     CalcButtons.hEditInput = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", L"", WS_CHILD | ES_AUTOHSCROLL, 0, 0, 0, 0, calcHwnd, NULL, NULL, NULL);
     CalcButtons.hBtnSubmit = CreateWindowW(L"BUTTON", L"Calculate", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, calcHwnd, (HMENU)ID_SUBMIT, NULL, NULL);
@@ -128,9 +128,6 @@ void UI::InitCalculatorWindow(HWND calcHwnd) {
     CalcButtons.hBtnInfo = CreateWindowW(L"BUTTON", L"i", WS_CHILD, 0, 0, 0, 0, calcHwnd, (HMENU)ID_INFO, NULL, NULL);
     CalcButtons.hBtnToggle = CreateWindowW(L"BUTTON", L"⇅", WS_CHILD | BS_PUSHBUTTON,
     0, 0, 0, 0, calcHwnd, (HMENU)ID_TOGGLE, NULL, NULL);
-    hEditResult = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", L"",
-    WS_CHILD | ES_READONLY | ES_CENTER, 20, 150, 300, 35, calcHwnd, NULL, NULL, NULL);
-    // Set titles/cues immediately
 }
 void UI::showTimeDilation(const std::wstring& title ) {
     SetWindowTextW(hStaticTitle, title.c_str());
@@ -139,7 +136,7 @@ void UI::showTimeDilation(const std::wstring& title ) {
 }
 void UI::UpdateLayoutCalculator() {
     RECT r;
-    GetClientRect(hwnd, &r);
+    GetClientRect(CalcButtons.hwnd, &r);
     winW = r.right;
     winH = r.bottom;
     headerH = winH * 0.2f;
@@ -159,5 +156,5 @@ void UI::UpdateLayoutCalculator() {
     Font_Update();
     ApplyFonts({CalcButtons.hEditInput, CalcButtons.hEditResult, CalcButtons.hBtnSubmit, CalcButtons.hBtnBack}, hFontUI);
     ApplyFonts({CalcButtons.hStaticTitle}, hFontTitle);
-    ApplyFonts({hBtnToggle}, hFontToggle);
+    ApplyFonts({CalcButtons.hBtnToggle}, hFontToggle);
 }

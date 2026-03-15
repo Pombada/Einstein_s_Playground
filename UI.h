@@ -45,7 +45,7 @@ public:
     void InitCalculatorWindow(HWND calcHwnd);
     void UpdateLayout();
     void UpdateLayoutCalculator();
-    void Font_Update();
+    void Font_Update(HWND targetHwnd);
     void ApplyFonts(const std::vector<HWND>& controls, HFONT font);
 
     // UI "Scenes"
