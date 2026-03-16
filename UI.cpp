@@ -131,12 +131,14 @@ void UI::InitCalculatorWindow(HWND calcHwnd) {
     CalcButtons.hBtnInfo = CreateWindowW(L"BUTTON", L"i", WS_CHILD, 0, 0, 0, 0, calcHwnd, (HMENU)ID_INFO, NULL, NULL);
     CalcButtons.hBtnToggle = CreateWindowW(L"BUTTON", L"⇅", WS_CHILD | BS_PUSHBUTTON,
     0, 0, 0, 0, calcHwnd, (HMENU)ID_TOGGLE, NULL, NULL);
+
 }
 void UI::showTimeDilation(const std::wstring& title ) {
     SetWindowTextW(hStaticTitle, title.c_str());
     for (auto b : menuButtons) ShowWindow(b, SW_HIDE);
     ShowWindow(hBtnBack, SW_SHOW); ShowWindow(hGammaCalculator, SW_SHOW) , ShowWindow(hEditResult, SW_SHOW),
     ShowWindow(hEditGamma, SW_SHOW);
+
 }
 void UI::UpdateLayoutCalculator() {
     RECT r;

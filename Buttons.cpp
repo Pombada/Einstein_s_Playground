@@ -88,6 +88,23 @@ long double RelativityCalculator::ParseGammaInput(std::wstring input) {
         return -2.0L; // General error code for "Invalid Input"
     }
 }
-long double RelativityCalculator::TimeDilationCalculation(std::wstring input) {
-    
-}
+long double RelativityCalculator::TimeDilationCalculation(std::wstring gamma,std::wstring time) {
+    try {
+        if (gamma.empty()) return -1.0L;
+        int decimalCount = 0;
+        for (auto &c : gamma) {
+            if (c == L'.') {
+                decimalCount++;
+                if (decimalCount > 1) throw std::invalid_argument("Too many decimals");
+            } else if (!iswdigit(c)) {
+                throw std::invalid_argument("Invalid character");
+            }
+        }
+        long double g = std::stold(gamma);
+    } catch (...) {
+        return -2.0L;
+    }
+
+    }
+
+

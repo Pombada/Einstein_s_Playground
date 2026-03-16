@@ -49,6 +49,7 @@ public:
     void Font_Update(HWND targetHwnd);
     void ApplyFonts(const std::vector<HWND>& controls, HFONT font);
     POINT Get_Mid_coordinates(HWND hwnd);
+
     // UI "Scenes"
     void ShowCalculation(const std::wstring& title, const std::wstring& cue);
     void showTimeDilation(const std::wstring& title);
