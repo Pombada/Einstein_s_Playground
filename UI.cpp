@@ -20,6 +20,8 @@ void UI::Init(HWND parentHwnd) {
     for (int i = 0; i < 3; ++i) {
         menuButtons.push_back(CreateWindowW(L"BUTTON", labels[i].c_str(), WS_VISIBLE | WS_CHILD, 0, 0, 0, 0, hwnd, (HMENU)(INT_PTR)(TIME_DILATION + i), NULL, NULL));
     }
+    hEditGamma = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", L"Enter gamma here", WS_CHILD | ES_AUTOHSCROLL, 0, 0, 0, 0, hwnd, NULL, NULL, NULL);
+    hEditResult = CreateWindowExW(WS_EX_CLIENTEDGE,L"EDIT",L"",WS_CHILD | ES_READONLY | ES_CENTER,0,0,0,0,hwnd,NULL,NULL,NULL);
     hGammaCalculator = CreateWindowExW(WS_EX_APPWINDOW,L"BUTTON", L"Gamma Factor Calculator",WS_CHILD,0,0,0,0,hwnd,(HMENU)CALC_GAMMA,NULL,NULL);
     hBtnBack = CreateWindowW(L"BUTTON",L"Back",WS_CHILD,0,0,0,0,hwnd,(HMENU)ID_BACK,NULL,NULL);
 
@@ -36,11 +38,11 @@ void UI::ShowCalculation(const std::wstring& title, const std::wstring& cue) {
 
 void UI::ShowMenu() {
     SetWindowTextW(hStaticTitle, L"Einstein's Playground");
-    SendMessage(hEdit1, EM_SETREADONLY, FALSE, 0);
-    SetWindowTextW(hEdit1, L"");
+    SendMessage(hEditGamma, EM_SETREADONLY, FALSE, 0);
+    SetWindowTextW(hEditGamma, L"");
     SetWindowTextW(hEditResult, L"");
     for (auto b : menuButtons) ShowWindow(b, SW_SHOW);
-    ShowWindow(hEdit1, SW_HIDE); ShowWindow(hBtnSubmit, SW_HIDE); ShowWindow(hBtnBack, SW_HIDE); ShowWindow(hGammaCalculator, SW_HIDE);
+    ShowWindow(hEditGamma, SW_HIDE); ShowWindow(hBtnSubmit, SW_HIDE); ShowWindow(hBtnBack, SW_HIDE); ShowWindow(hGammaCalculator, SW_HIDE);
     ShowWindow(hEditResult, SW_HIDE); ShowWindow(hBtnToggle, SW_HIDE);
 }
 
@@ -107,9 +109,10 @@ void UI::UpdateLayout() {
 
     MoveWindow(hBtnBack, centerX + spacing*3 , winH*0.6f, btnW*0.5, btnH, TRUE);
     MoveWindow(hGammaCalculator,centerX - btnW ,winH*0.6f,btnW,btnH, TRUE);
-
-    Font_Update();
-    ApplyFonts({hEdit1, hEditResult, hBtnSubmit, hBtnBack, hGammaCalculator}, hFontUI);
+    MoveWindow(hEditGamma,centerX - btnW,winH*0.6f - btnH*2 - spacing,btnW*0.75 - spacing,btnH,TRUE);
+    MoveWindow(hEditResult,centerX - btnW,winH*0.6f - btnH - spacing*0.5,btnW*1.5 + spacing*3  ,btnH,TRUE);
+    Font_Update(hwnd);
+    ApplyFonts({hEditGamma, hEditResult, hBtnSubmit, hBtnBack, hGammaCalculator}, hFontUI);
     ApplyFonts({hStaticTitle}, hFontTitle);
     ApplyFonts({hBtnToggle}, hFontToggle);
     ApplyFonts(menuButtons, hFontUI);
@@ -121,7 +124,7 @@ void UI::InitCalculatorWindow(HWND calcHwnd) {
 
     CalcButtons.hwnd = calcHwnd;
     CalcButtons.hStaticTitle = CreateWindowW(L"STATIC", L"Enter velocity in m/s ", WS_VISIBLE | WS_CHILD | SS_CENTER | SS_CENTERIMAGE, 0, 0, 0, 0, CalcButtons.hwnd, NULL, NULL, NULL);
-    CalcButtons.hEditResult = CreateWindowExW(WS_EX_CLIENTEDGE,L"EDIT",L"",WS_CHILD | ES_READONLY | ES_CENTER,0,0,0,0,calcHwnd,NULL,NULL,NULL);
+    CalcButtons.hEditResult = CreateWindowExW(WS_EX_CLIENTEDGE,L"EDIT",L"",WS_CHILD | ES_READONLY | ES_CENTER ,0,0,0,0,calcHwnd,NULL,NULL,NULL);
     CalcButtons.hEditInput = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", L"", WS_CHILD | ES_AUTOHSCROLL, 0, 0, 0, 0, calcHwnd, NULL, NULL, NULL);
     CalcButtons.hBtnSubmit = CreateWindowW(L"BUTTON", L"Calculate", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, calcHwnd, (HMENU)ID_SUBMIT, NULL, NULL);
     CalcButtons.hBtnBack = CreateWindowW(L"BUTTON", L"Back", WS_CHILD, 0, 0, 0, 0, calcHwnd, (HMENU)ID_BACK, NULL, NULL);
@@ -132,7 +135,8 @@ void UI::InitCalculatorWindow(HWND calcHwnd) {
 void UI::showTimeDilation(const std::wstring& title ) {
     SetWindowTextW(hStaticTitle, title.c_str());
     for (auto b : menuButtons) ShowWindow(b, SW_HIDE);
-    ShowWindow(hBtnBack, SW_SHOW); ShowWindow(hGammaCalculator, SW_SHOW);
+    ShowWindow(hBtnBack, SW_SHOW); ShowWindow(hGammaCalculator, SW_SHOW) , ShowWindow(hEditResult, SW_SHOW),
+    ShowWindow(hEditGamma, SW_SHOW);
 }
 void UI::UpdateLayoutCalculator() {
     RECT r;
@@ -153,8 +157,16 @@ void UI::UpdateLayoutCalculator() {
     MoveWindow(CalcButtons.hEditInput, centerX - btnW, centerY, btnW*1.5 + spacing*2, btnH*0.85, TRUE);
     MoveWindow(CalcButtons.hBtnToggle, centerX + spacing*3 + btnW*0.5, centerY+ btnH, btnW*0.3, btnH*0.85, TRUE);
     MoveWindow(CalcButtons.hEditResult, centerX - btnW, centerY + btnH, btnW*1.5 + spacing*2, btnH*0.85, TRUE);
-    Font_Update();
+    Font_Update(CalcButtons.hwnd);
     ApplyFonts({CalcButtons.hEditInput, CalcButtons.hEditResult, CalcButtons.hBtnSubmit, CalcButtons.hBtnBack}, hFontUI);
     ApplyFonts({CalcButtons.hStaticTitle}, hFontTitle);
     ApplyFonts({CalcButtons.hBtnToggle}, hFontToggle);
+}
+POINT UI::Get_Mid_coordinates(HWND hwnd) {
+    //double first val is x, second is y
+    RECT r;
+    GetClientRect(hwnd, &r);
+    return {
+        (r.right - r.left) / 2, (r.bottom - r.top) / 2
+    };
 }

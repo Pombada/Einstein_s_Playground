@@ -24,7 +24,8 @@ struct CalculatorControls {
 class UI {
 public:
     CalculatorControls CalcButtons;
-    HWND hwnd = nullptr, hGammaCalculator = nullptr, hEditResult = nullptr, hStaticTitle = nullptr, hEdit1 = nullptr, hBtnSubmit = nullptr, hBtnBack = nullptr;
+    HWND hwnd = nullptr, hGammaCalculator = nullptr, hEditResult = nullptr, hStaticTitle = nullptr, hEditGamma = nullptr, hBtnSubmit = nullptr, hBtnBack = nullptr,
+    hEditTime = nullptr;
     std::vector<HWND> menuButtons;
     std::vector<HWND> timeDilationButtons;
     HFONT hFontUI = nullptr, hFontTitle = nullptr , hFontToggle = nullptr;
@@ -47,7 +48,7 @@ public:
     void UpdateLayoutCalculator();
     void Font_Update(HWND targetHwnd);
     void ApplyFonts(const std::vector<HWND>& controls, HFONT font);
-
+    POINT Get_Mid_coordinates(HWND hwnd);
     // UI "Scenes"
     void ShowCalculation(const std::wstring& title, const std::wstring& cue);
     void showTimeDilation(const std::wstring& title);

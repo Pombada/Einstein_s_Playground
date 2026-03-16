@@ -17,65 +17,23 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             int id = LOWORD(wp);
             if (id == TIME_DILATION) ui.showTimeDilation(L"Welcome to Time Dilation!");
             if (id == CALC_GAMMA) {
+                POINT mid = ui.Get_Mid_coordinates(hwnd);
                 HWND hCalc = CreateWindowExW(
     0,
     L"GammaCalculatorClass",
     L"Gamma Calculator",
     WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-    CW_USEDEFAULT, CW_USEDEFAULT, 600, 500,
+    mid.x, mid.y, 600, 500,
     NULL,   // ❗ NOT hwnd
     NULL,
     (HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE),
     hwnd    // pass main hwnd via lpParam
 );
             }
-            if (id == ID_INFO)    ui.ShowHelp(ui.isInverseMode);
             if (id == ID_BACK)    ui.ShowMenu();
-            if (id == ID_TOGGLE) {
-                ui.isInverseMode = !ui.isInverseMode;
-
-                if (ui.isInverseMode) {
-                    SetWindowTextW(ui.CalcButtons.hStaticTitle, L"Enter Gamma Factor");
-                    SendMessage(ui.hEdit1, EM_SETCUEBANNER, FALSE, (LPARAM)L"e.g. 2.29");
-                } else {
-                    SetWindowTextW(ui.hStaticTitle, L"Enter velocity in m/s");
-                    SendMessage(ui.hEdit1, EM_SETCUEBANNER, FALSE, (LPARAM)L"Enter m/s, %, or M...");
-                }
-                SetWindowTextW(ui.CalcButtons.hEditResult, L"Result:");
-            }
-            if (id == ID_SUBMIT) {
-                wchar_t buffer[128];
-                GetWindowTextW(ui.hEdit1, buffer, 128);
-                std::wstring input(buffer);
-                std::wstringstream ss;
-                if (ui.isInverseMode) {
-                    // Mode 1: Gamma -> Speed
-                    long double result = RelativityCalculator::ParseGammaInput(input);
-
-                    if (result == -1.0L) {
-                        SetWindowTextW(ui.hEditResult, L"Error: Gamma must be >= 1");
-                    } else if (result == -2.0L) {
-                        SetWindowTextW(ui.hEditResult, L"Error: Invalid Input");
-                    } else {
-                        ss << L"Speed: " << std::fixed << std::setprecision(2) << result << L" m/s";
-                        SetWindowTextW(ui.hEditResult, ss.str().c_str());
-                    }
-                } else {
-                    // Mode 2: Speed -> Gamma (Your existing code)
-                    long double result = RelativityCalculator::ParseAndCalculate(input);
-                    if (result == -1.0L) {
-                        SetWindowTextW(ui.hEditResult, L"Error: v must be < c and >= 0");
-                    } else if (result == -2.0L) {
-                        SetWindowTextW(ui.hEditResult, L"Error: Invalid input");
-                    } else {
-                        ss << L"Gamma: " << std::fixed << std::setprecision(15) << result;
-                        SetWindowTextW(ui.hEditResult, ss.str().c_str());
-                    }
-                }
-                SetWindowTextW(ui.hEdit1, L""); // Clear input
-            }
+        }
             break;
-    }
+
         case WM_SIZE:
             ui.UpdateLayout();
             break;
@@ -120,6 +78,7 @@ LRESULT CALLBACK GammaWindowProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 
                 SetWindowTextW(gammaUI.CalcButtons.hEditResult, L"Result:");
             }
+            if (id == ID_INFO) gammaUI.ShowHelp(gammaUI.isInverseMode);
 
             if (id == ID_SUBMIT) {
                 wchar_t buffer[128];

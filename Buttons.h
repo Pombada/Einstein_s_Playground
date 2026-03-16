@@ -12,6 +12,7 @@ public:
     static long double ParseAndCalculate(std::wstring input);
     static long double CalculateSpeedFromGamma(long double gamma);
     static long double ParseGammaInput(std::wstring input);
+    static long double TimeDilationCalculation(std::wstring input);
 
 };
 #endif //EINSTEIN_S_PLAYGROUND_BUTTONS_H

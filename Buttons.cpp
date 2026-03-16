@@ -88,3 +88,6 @@ long double RelativityCalculator::ParseGammaInput(std::wstring input) {
         return -2.0L; // General error code for "Invalid Input"
     }
 }
+long double RelativityCalculator::TimeDilationCalculation(std::wstring input) {
+    
+}
