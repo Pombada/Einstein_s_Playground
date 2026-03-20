@@ -30,12 +30,12 @@ long double RelativityCalculator::ParseAndCalculate(std::wstring input) {
         }
 
         // 3. Check for suffixes (k or m)
-        if (input.find(L"m") != std::wstring::npos) {
+        if (!input.empty() && input.back() == L'm') {
             multiplier = 1000000.0;
-            input.erase(input.find(L"m")); // Remove 'm' for stod
-        } else if (input.find(L"k") != std::wstring::npos) {
+            input.pop_back();
+        } else if (!input.empty() && input.back() == L'k') {
             multiplier = 1000.0;
-            input.erase(input.find(L"k")); // Remove 'k' for stod
+            input.pop_back();
         }
         int decimalCount = 0;
         for (auto &c : input) {
@@ -106,5 +106,12 @@ long double RelativityCalculator::TimeDilationCalculation(std::wstring gamma,std
     }
 
     }
+long double RelativityCalculator::CheckInput(std::wstring input) {
+    if (input.empty()) return -1.0L;
+    if (input.length() > 1 && input[0] == L'0' && input[1] != L'.' ) {
+        return -2.0L;
+    }
+    return 1;
+}
 
 
